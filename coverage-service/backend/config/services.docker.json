@@ -1,0 +1,18 @@
+[
+  {
+    "name": "hello-world",
+    "display_name": "Hello World",
+    "backend_path": "/services/hello-world/backend",
+    "frontend_path": "/services/hello-world/frontend",
+    "backend_type": "go",
+    "frontend_type": "npm"
+  },
+  {
+    "name": "inventory-tracker",
+    "display_name": "Inventory Tracker",
+    "backend_path": "/services/inventory-tracker/backend",
+    "frontend_path": "/services/inventory-tracker/frontend",
+    "backend_type": "go",
+    "frontend_type": "npm"
+  }
+]

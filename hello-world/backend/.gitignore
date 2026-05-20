@@ -1,0 +1,16 @@
+# Go backend gitignore
+/bin/
+/pkg/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.log
+.env
+.DS_Store
+.vscode/
+.idea/
+node_modules/

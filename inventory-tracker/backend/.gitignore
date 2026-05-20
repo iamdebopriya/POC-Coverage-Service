@@ -1,0 +1,29 @@
+# Go build outputs
+/bin/
+/build/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Coverage
+coverage.out
+
+# Dependency directories
+/vendor/
+
+# Environment
+.env
+
+# Test output
+*.test
+*.out
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

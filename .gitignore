@@ -1,0 +1,53 @@
+# ─── Environment & Secrets ───────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# ─── Go ──────────────────────────────────────────────────────────────────────
+bin/
+dist/
+*.exe
+*.out
+coverage.out
+coverage.html
+vendor/
+
+# ─── Node / Vue / Vite ───────────────────────────────────────────────────────
+node_modules/
+dist/
+.vite/
+*.local
+coverage/
+html/
+
+# ─── Docker ──────────────────────────────────────────────────────────────────
+# Keep docker-compose.yml but ignore override files
+docker-compose.override.yml
+
+# ─── Database ────────────────────────────────────────────────────────────────
+*.sql
+*.db
+*.sqlite
+
+# ─── OS ──────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+*.swp
+*.swo
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+
+# ─── Test output ─────────────────────────────────────────────────────────────
+test-results/
+playwright-report/
