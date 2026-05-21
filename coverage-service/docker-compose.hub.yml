@@ -33,9 +33,8 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - /your/poc2_ami:/services
-      - ./backend/config/services_docker.json:/app/config/services.json
-
+      - E:/poc2_ami:/services
+      - ./backend/config/services.docker.json:/app/config/services.json
   frontend:
     image: debopriyalahiri/coverage-dashboard:frontend-latest
     restart: unless-stopped
