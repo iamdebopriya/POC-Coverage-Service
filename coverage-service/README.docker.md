@@ -1,142 +1,185 @@
-# Coverage Service — Docker Setup
-
-## What you need installed
-- Docker Desktop (Windows / Mac) or Docker Engine (Linux)
-- That's it. No Go, Node, or PostgreSQL needed on your machine.
+# Coverage Dashboard — Docker Guide
 
 ---
 
-## Step 1 — Edit docker-compose.yml (ONE line)
+## Images on Docker Hub
 
-Open `docker-compose.yml` and find the volumes section under `backend`.
-Change the left side to point to your root folder:
+Repository: `debopriyalahiri/coverage-dashboard`
 
+| Tag | Description | Updated |
+|---|---|---|
+| `backend-latest` | Go API server — always latest | Auto on every push to main |
+| `frontend-latest` | Vue 3 dashboard via nginx — always latest | Auto on every push to main |
+
+Pull the images:
+```bash
+docker pull debopriyalahiri/coverage-dashboard:backend-latest
+docker pull debopriyalahiri/coverage-dashboard:frontend-latest
+```
+
+---
+
+## Option 1 — Run from Docker Hub (for others)
+
+No source code needed. Just three files required:
+
+- `docker-compose.hub.yml`
+- `backend/config/services.docker.json`
+- `.env`
+
+**Step 1 — Create `.env` next to `docker-compose.hub.yml`:**
+```
+POSTGRES_USER=coverage_user
+POSTGRES_PASSWORD=coverage_pass
+POSTGRES_DB=coverage_db
+```
+
+**Step 2 — Edit `services.docker.json` with your service paths:**
+```json
+[
+  {
+    "name": "my-service",
+    "display_name": "My Service",
+    "backend_path": "/services/my-service/backend",
+    "frontend_path": "/services/my-service/frontend",
+    "backend_type": "go",
+    "frontend_type": "npm"
+  }
+]
+```
+
+**Step 3 — Edit the volume path in `docker-compose.hub.yml`:**
 ```yaml
 volumes:
-  - C:/Users/YourName/poc2_ami:/services   # ← change this path
+  - /your/projects/folder:/services   ← change left side only
 ```
 
-**Windows:**  `C:/Users/HP/poc2_ami:/services`
-**Mac/Linux:** `/home/yourname/poc2_ami:/services`
+Windows example: `C:/Users/YourName/poc2_ami:/services`
+Mac/Linux example: `/home/yourname/poc2_ami:/services`
 
-The right side (`:/services`) must stay as-is.
+**Step 4 — Start:**
+```bash
+docker compose -f docker-compose.hub.yml up
+```
+
+Open `http://localhost:5173`
 
 ---
 
-## Step 2 — Edit services.json (if your services have different names)
+## Option 2 — Run from Local Build (for development)
 
-Open `backend/config/services.json`.
-Paths must start with `/services/` — that is where Docker mounts your folder.
+Full source code needed. Builds images locally from source.
 
-```json
-{
-  "name": "my-service",
-  "display_name": "My Service",
-  "backend_path": "/services/my-service/backend",
-  "frontend_path": "/services/my-service/frontend",
-  "backend_type": "go",
-  "frontend_type": "npm"
-}
+**Step 1 — Create `.env`:**
+```
+POSTGRES_USER=coverage_user
+POSTGRES_PASSWORD=coverage_pass
+POSTGRES_DB=coverage_db
 ```
 
----
+**Step 2 — Edit volume path in `docker-compose.yml`:**
+```yaml
+volumes:
+  - E:/poc2_ami:/services   ← change to your path
+```
 
-## Step 3 — Start everything
-
+**Step 3 — First run or after code changes:**
 ```bash
 docker compose up --build
 ```
 
-First run takes 2–3 minutes (downloads images, builds).
-After that, subsequent starts are fast.
-
----
-
-## Step 4 — Open the dashboard
-
-```
-http://localhost:5173
-```
-
-Pick a service → click Run Tests → watch output stream live.
-
----
-
-## Useful commands
-
+**Step 4 — Subsequent runs (no code changes):**
 ```bash
-# Start (foreground, see logs)
-docker compose up --build
-
-# Start in background
-docker compose up --build -d
-
-# Stop
-docker compose down
-
-# Stop and delete database too
-docker compose down -v
-
-# See logs
-docker compose logs -f backend
-docker compose logs -f frontend
-
-# Rebuild after code changes
-docker compose up --build
+docker compose start
 ```
+
+Open `http://localhost:5173`
 
 ---
 
-## Ports used
+## Option 3 — Run without Docker (local Go + Node)
 
-| Service    | Port |
-|------------|------|
-| Frontend   | 5173 |
-| Backend    | 8081 |
-| PostgreSQL | 5432 |
+**Terminal 1 — Backend:**
+```bash
+cd coverage-service/backend
+go run main.go
+```
+
+**Terminal 2 — Frontend:**
+```bash
+cd coverage-service/frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173`
+
+Uses `services.json` with relative paths (`../../hello-world/backend`).
 
 ---
 
-## Folder structure expected
+## Docker Commands Reference
 
-```
-poc2_ami/                   ← your root (mounted as /services inside Docker)
-├── coverage-service/       ← this app
-├── hello-world/
-│   ├── backend/
-│   └── frontend/
-└── inventory-tracker/
-    ├── backend/
-    └── frontend/
-```
-
----
-
-## Docker Hub
-
-Images available at:
-https://hub.docker.com/r/debopriyalahiri/coverage-dashboard
-
-| Tag | Description |
+| Command | What it does |
 |---|---|
-| `backend-1.0.0` | Go API server |
-| `frontend-1.0.0` | Vue 3 dashboard |
+| `docker compose up --build` | First time or after code changes |
+| `docker compose up` | Start everything (no rebuild) |
+| `docker compose start` | Resume stopped containers (fastest) |
+| `docker compose stop` | Stop but keep data |
+| `docker compose down` | Stop and remove containers (data safe) |
+| `docker compose down -v` | Stop and delete everything including database |
+| `docker compose restart backend` | Restart only backend (e.g. after services.json change) |
+| `docker compose -f docker-compose.hub.yml up` | Run using Hub images |
+| `docker compose ps` | Check what is running |
+| `docker compose logs -f backend` | See live backend logs |
+
+---
+
+## services.json — Path format by mode
+
+| Mode | Path format |
+|---|---|
+| `go run` (local) | `../../hello-world/backend` |
+| Docker (local build or Hub) | `/services/hello-world/backend` |
+
+Two files kept separately:
+- `backend/config/services.json` — local paths, used by `go run`
+- `backend/config/services.docker.json` — `/services/` paths, used by Docker
+
+---
+
+## CI/CD — GitHub Actions
+
+Every push to `main` that changes anything inside `coverage-service/` automatically:
+
+1. Builds new backend and frontend images
+2. Pushes `backend-latest` and `frontend-latest` to Docker Hub
+
+No manual push needed after the initial setup.
+
+**Required GitHub Secrets:**
+
+| Secret | Value |
+|---|---|
+| `DOCKER_USERNAME` | `debopriyalahiri` |
+| `DOCKER_TOKEN` | Docker Hub personal access token |
+
+Workflow file: `.github/workflows/docker-publish.yml`
 
 ---
 
 ## Troubleshooting
 
-**"Cannot connect to database"**
-Wait a few seconds — the backend starts before PostgreSQL is fully ready.
-Run `docker compose up` again.
-
-**"Path not found" when running tests**
-Check that the volume path in `docker-compose.yml` matches your actual folder location.
-Check that `services.json` paths start with `/services/`.
+**Path not found when running tests**
+Check that the volume path in compose file matches your actual folder.
+Check that `services.docker.json` paths start with `/services/`.
 
 **Port already in use**
-Change the left side of the port mapping:
-`"5174:80"` instead of `"5173:80"` for the frontend.
+Change the left port number:
+```yaml
+- "5174:80"   
+```
 
-docker compose up
-
+**Database connection error**
+Wait a few seconds — backend starts before PostgreSQL is fully ready.
+Run `docker compose up` again.
