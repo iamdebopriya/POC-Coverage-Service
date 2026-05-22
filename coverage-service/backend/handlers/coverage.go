@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"coverage-service/backend/database"
@@ -26,12 +27,37 @@ func SaveCoverage(c *gin.Context) {
 func GetCoverage(c *gin.Context) {
 	var coverages []models.Coverage
 	query := database.DB
-	if from, to := c.Query("from"), c.Query("to"); from != "" && to != "" {
-		query = query.Where("timestamp BETWEEN ? AND ?", from, to)
+
+	from := c.Query("from")
+	to := c.Query("to")
+	offsetStr := c.Query("offset")
+
+	if from != "" && to != "" {
+
+		offsetMins := 0
+		if offsetStr != "" {
+			if v, err := strconv.Atoi(offsetStr); err == nil {
+				offsetMins = -v
+			}
+		}
+
+		loc := time.FixedZone("client", offsetMins*60)
+
+		fromTime, err1 := time.ParseInLocation("2006-01-02T15:04", from, loc)
+		toTime, err2 := time.ParseInLocation("2006-01-02T15:04", to, loc)
+
+		if err1 == nil && err2 == nil {
+			query = query.Where("timestamp BETWEEN ? AND ?",
+				fromTime.UTC(),
+				toTime.UTC(),
+			)
+		}
 	}
+
 	if s := c.Query("service"); s != "" {
 		query = query.Where("service_name = ?", s)
 	}
+
 	query.Order("timestamp desc").Find(&coverages)
 	c.JSON(http.StatusOK, coverages)
 }

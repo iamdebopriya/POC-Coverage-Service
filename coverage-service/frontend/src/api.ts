@@ -13,6 +13,9 @@ export async function fetchCoverages(params?: { service?: string; from?: string;
   if (params?.service) q.set('service', params.service)
   if (params?.from) q.set('from', params.from)
   if (params?.to) q.set('to', params.to)
+  
+  q.set('offset', String(new Date().getTimezoneOffset()))
+  
   const res = await fetch(`${BASE}/coverage${q.toString() ? '?' + q : ''}`)
   if (!res.ok) throw new Error('Failed to fetch coverages')
   return res.json()
