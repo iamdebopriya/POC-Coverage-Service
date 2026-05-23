@@ -128,19 +128,19 @@ Example service entry in `backend/config/services.json`:
 
 ```json
 {
-  "name": "hello-world",
-  "display_name": "Hello World",
-  "backend_path": "../hello-world/backend",
-  "frontend_path": "../hello-world/frontend",
-  "backend_type": "go",
-  "frontend_type": "npm"
-}
+    "name": "hello-world",
+    "display_name": "Hello World",
+    "backend_path": "../../hello-world/backend",
+    "frontend_path": "../../hello-world/frontend",
+    "backend_type": "go",
+    "frontend_type": "npm"
+  }
 ```
 
 - `name`: unique internal service key.
 - `display_name`: friendly name shown in the dashboard.
-- `backend_path`: relative folder for backend tests.
-- `frontend_path`: relative folder for frontend tests.
+- `backend_path`: relative backend test folder from /backend of coverage service.
+- `frontend_path`:relative frontend test folder from /backend of coverage service.
 - `backend_type`: currently supports `go`.
 - `frontend_type`: currently supports `npm`.
 
