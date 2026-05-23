@@ -128,21 +128,26 @@ Example service entry in `backend/config/services.json`:
 
 ```json
 {
-    "name": "hello-world",
-    "display_name": "Hello World",
-    "backend_path": "../../hello-world/backend",
-    "frontend_path": "../../hello-world/frontend",
+    "name": "inventory-tracker",
+    "display_name": "Inventory Tracker",
+    "backend_path": "../../inventory-tracker/backend",
+    "frontend_path": "../../inventory-tracker/frontend",
     "backend_type": "go",
     "frontend_type": "npm"
   }
 ```
 
-- `name`: unique internal service key.
-- `display_name`: friendly name shown in the dashboard.
-- `backend_path`: relative backend test folder from /backend of coverage service.
-- `frontend_path`:relative frontend test folder from /backend of coverage service.
-- `backend_type`: currently supports `go`.
-- `frontend_type`: currently supports `npm`.
+name: Unique internal service key (e.g., inventory-tracker).
+
+display_name: Friendly name shown in the UI dashboard.
+
+backend_path: Relative path to the target service's backend directory, calculated from the coverage-service/backend root folder (e.g., ../../inventory-tracker/backend).
+
+frontend_path: Relative path to the target service's frontend directory, calculated from the coverage-service/backend root folder (e.g., ../../inventory-tracker/frontend).
+
+backend_type: Test runner ecosystem for the backend (currently supports go).
+
+frontend_type: Test runner ecosystem for the frontend (currently supports npm).
 
 ## Database configuration
 
